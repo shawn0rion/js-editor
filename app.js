@@ -20,14 +20,14 @@ class DOMHandler {
 }
 
 let timeout;
-function handleUserInput(e) {
+function handleUserInput(text) {
   clearTimeout(timeout);
 
-  timeout = setTimeout(() => executeUserCode(e.target.innerText), 300);
+  timeout = setTimeout(() => executeUserCode(text), 300);
 }
 
 function executeUserCode(userCode) {
-  // This function captures any console.log outputs if called, unless
+  // This function captures any console.log outputs if called
   function executeBody() {
     return new Function(userCode)();
   }
@@ -49,6 +49,7 @@ function executeUserCode(userCode) {
       const logMessage = messageLogger.captureLog(
         consoleLogOutput.join("<br>")
       );
+      console.log(logMessage);
       domHandler.displayLog(logMessage);
     } else if (result === undefined) {
       const logMessage = messageLogger.captureLog("");
@@ -70,5 +71,63 @@ function executeUserCode(userCode) {
 
 const messageLogger = new MessageLogger();
 const domHandler = new DOMHandler("log-display");
+
 const textInput = document.getElementById("text-input");
-textInput.addEventListener("input", handleUserInput);
+
+// syntax highlighting object
+const codeMirror = CodeMirror(textInput, {
+  mode: "javascript",
+  lineNumbers: true,
+  lineWrapping: true,
+});
+
+// initialization example code
+const example = `const heroes = [
+  { name: 'Tracer', role: 'Damage' },
+  { name: 'Reaper', role: 'Damage' },
+  { name: 'Sombra', role: 'Damage' },
+  { name: 'Genji', role: 'Damage' },
+  { name: 'Mercy', role: 'Support' },
+  { name: 'Moira', role: 'Support' },
+  { name: 'Zenyatta', role: 'Support' },
+  { name: 'Lucio', role: 'Support' },
+  { name: 'Widowmaker', role: 'Damage' },
+  { name: 'Winston', role: 'Tank' },
+];
+
+
+const mixedBag = [
+  { name: 'Tracer'},
+  { name: 'Genji', role: 'Damage' },
+  { name: 'Lucio'},
+  { name: 'Mercy', role: 'Support' },
+  { role: 'Tank' },
+];
+
+function filterHeroes(arg1, arg2){
+	return [...arg1.filter(obj => compareObjects(obj, arg2))];
+}
+
+
+function compareObjects(arg1, arg2){
+ 	return Object.keys(arg2).every(key => arg2[key] === arg1[key]); 
+}
+
+mixedBag.forEach(item => {
+  const filteredHeroes = filterHeroes(heroes, item);
+
+  if (filteredHeroes.length > 0) {
+    filteredHeroes.forEach(hero => {
+      const { name, role } = hero;
+      console.log(\`Name: \${name}, Role: \${role}\`);
+    });
+  }
+});`;
+
+codeMirror.setValue(example);
+executeUserCode(example);
+
+// event for user input
+codeMirror.on("change", (cm) => {
+  handleUserInput(cm.getValue());
+});

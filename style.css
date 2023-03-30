@@ -10,8 +10,9 @@
 :root {
   --text: #f9f9f9;
   --border: #f86bff;
-  --light: #21283c;
+  --light: #eee;
   --dark: #130431;
+  --logHeight: 150px;
   /* --input-bg: #ececec; */
   /* --input-text: #333; */
 }
@@ -31,25 +32,28 @@ body {
 
 #editor-area {
   height: 100%;
-  display: grid;
-  grid-template-rows: 4fr 1fr;
   overflow: hidden;
-  color: #fff;
-  background: var(--light);
 }
 
-#text-input {
-  margin-left: 10px;
-  color: var(--text);
-  padding: 10px;
-  border-radius: 5px;
+.CodeMirror-wrap {
+  height: calc(100vh - var(--logHeight));
+  width: 100%;
+  background: var(--light);
 }
 
 #log-display {
   background: var(--dark);
   border-radius: 5px;
   border-top: 4px solid var(--border);
-  height: 100%;
-  display: grid;
+  height: var(--logHeight);
+  padding-top: 4px;
   padding-left: 10px;
+  font-size: 0.8rem;
+  color: #fff;
+  overflow-y: scroll;
+}
+
+.CodeMirror-vscrollbar,
+#log-display::-webkit-scrollbar {
+  width: 0px;
 }
